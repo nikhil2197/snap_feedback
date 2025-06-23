@@ -1,32 +1,57 @@
+const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8000";
+
+export interface CriterionFeedback {
+    criterion_name: string;
+    passed: boolean;
+    what_went_well: string;
+    what_could_be_better: string;
+}
+
+export interface SubmissionResponse {
+    id: string;
+    playground_image_url: string;
+    toy_image_url: string;
+    activity_description?: string;
+    playground_feedback?: CriterionFeedback[];
+    toy_feedback?: CriterionFeedback[];
+    created_at: string; // as ISO string
+    updated_at: string; // as ISO string
+}
+
 export async function submitDesign(
     playgroundImageBase64: string,
     toyImageBase64: string,
     activityDescription: string
-): Promise<{ submission_id: number }> {
-    console.log("Submitting to API:", {
-        playgroundImageBase64,
-        toyImageBase64,
-        activityDescription,
+): Promise<SubmissionResponse> {
+    const response = await fetch(`${API_BASE_URL}/submit-design`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            playground_image_data_base64: playgroundImageBase64,
+            toy_image_data_base64: toyImageBase64,
+            activity_description: activityDescription,
+        }),
     });
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    // Simulate a response
-    const response = { submission_id: Math.floor(Math.random() * 1000) };
-    console.log("API response:", response);
-    return response;
+
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.detail || "Failed to submit design");
+    }
+
+    return response.json();
 }
 
 export async function getFeedback(
     submissionId: number
-): Promise<{ playground_feedback: string, toy_feedback: string }> {
-    console.log("Fetching feedback for submission ID:", submissionId);
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    // Simulate a response
-    const response = {
-        playground_feedback: "This is a great playground design! The layout is very intuitive and the use of natural materials is a big plus. One suggestion would be to add more shaded areas.",
-        toy_feedback: "The toy is very creative and engaging. It encourages imaginative play. However, the small parts could be a choking hazard for younger children."
-    };
-    console.log("API response:", response);
-    return response;
+): Promise<SubmissionResponse> {
+    const response = await fetch(`${API_BASE_URL}/feedback/${submissionId}`);
+    
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.detail || "Failed to fetch feedback");
+    }
+    
+    return response.json();
 } 
