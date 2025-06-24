@@ -7,7 +7,7 @@ client = MongoClient(settings.MONGO_URI)
 
 # This will get the database name from your MONGO_URI
 # e.g., 'design_feedback_db'
-db = client.get_database()
+db =client["snapfeedback"]
 
 def get_db():
     """
