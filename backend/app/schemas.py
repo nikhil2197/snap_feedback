@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field, ConfigDict, RootModel
-from typing import List, Optional
+from typing import List, Optional, Dict, Union
 from datetime import datetime
 from bson import ObjectId
 
@@ -14,10 +14,10 @@ class PyObjectId(ObjectId):
             json_schema=core_schema.str_schema(),
             python_schema=core_schema.union_schema([
                 core_schema.is_instance_schema(ObjectId),
-                core_schema.chain_schema(
+                core_schema.chain_schema([
                     core_schema.str_schema(),
                     core_schema.no_info_plain_validator_function(cls.validate),
-                )
+                ])
             ]),
             serialization=core_schema.plain_serializer_function_ser_schema(
                 lambda x: str(x)
@@ -31,13 +31,12 @@ class PyObjectId(ObjectId):
         return ObjectId(v)
 
 class CriterionFeedback(BaseModel):
-    criterion_name: str
-    passed: bool
+    score: Union[int, float]  # 0, 0.5, or 1
     what_went_well: str
-    what_could_be_better: str
+    what_could_be_improved: str
 
 class FeedbackDetails(RootModel):
-    root: List[CriterionFeedback]
+    root: Dict[str, CriterionFeedback]
 
 class SubmissionCreate(BaseModel):
     playground_image_data_base64: str
@@ -49,8 +48,8 @@ class SubmissionInDB(BaseModel):
     playground_image_url: str
     toy_image_url: str
     activity_description: Optional[str] = None
-    playground_feedback: Optional[List[CriterionFeedback]] = None
-    toy_feedback: Optional[List[CriterionFeedback]] = None
+    playground_feedback: Optional[Dict[str, CriterionFeedback]] = None
+    toy_feedback: Optional[Dict[str, CriterionFeedback]] = None
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
     
@@ -65,8 +64,8 @@ class SubmissionResponse(BaseModel):
     playground_image_url: str
     toy_image_url: str
     activity_description: Optional[str] = None
-    playground_feedback: Optional[List[CriterionFeedback]] = None
-    toy_feedback: Optional[List[CriterionFeedback]] = None
+    playground_feedback: Optional[Dict[str, CriterionFeedback]] = None
+    toy_feedback: Optional[Dict[str, CriterionFeedback]] = None
     created_at: datetime
     updated_at: datetime
 

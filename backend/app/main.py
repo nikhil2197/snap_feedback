@@ -1,12 +1,13 @@
 import os
 import uuid
 import base64
-from typing import List
+from typing import Dict
 from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from pymongo.database import Database
 from pydantic import ValidationError, parse_obj_as
+from bson import ObjectId
 
 from . import crud, schemas
 from .core import ai_models
@@ -29,6 +30,16 @@ app.add_middleware(
 
 # Mount static files for development
 app.mount("/images", StaticFiles(directory="uploaded_images"), name="images")
+
+def convert_objectids(obj):
+    if isinstance(obj, dict):
+        return {k: convert_objectids(v) for k, v in obj.items()}
+    elif isinstance(obj, list):
+        return [convert_objectids(i) for i in obj]
+    elif isinstance(obj, ObjectId):
+        return str(obj)
+    else:
+        return obj
 
 @app.get("/", tags=["Root"])
 async def read_root():
@@ -88,12 +99,14 @@ async def submit_design(
 
     # Validate and update DB with feedback
     try:
-        validated_playground_feedback = parse_obj_as(List[schemas.CriterionFeedback], playground_feedback_json.get("feedback", []))
-        validated_toy_feedback = parse_obj_as(List[schemas.CriterionFeedback], toy_feedback_json.get("feedback", []))
+        # The AI response should be a dictionary with criterion names as keys
+        # and objects with score and justification as values
+        validated_playground_feedback = parse_obj_as(Dict[str, schemas.CriterionFeedback], playground_feedback_json)
+        validated_toy_feedback = parse_obj_as(Dict[str, schemas.CriterionFeedback], toy_feedback_json)
         
-        # We need to convert pydantic models to dicts for the crud function
-        playground_feedback_dict = [item.model_dump() for item in validated_playground_feedback]
-        toy_feedback_dict = [item.model_dump() for item in validated_toy_feedback]
+        # Convert pydantic models to dicts for the crud function
+        playground_feedback_dict = {k: v.model_dump() for k, v in validated_playground_feedback.items()}
+        toy_feedback_dict = {k: v.model_dump() for k, v in validated_toy_feedback.items()}
         
         crud.update_submission_feedback(db, submission_id=str(db_submission["_id"]), feedback_type="playground_feedback", feedback_data=playground_feedback_dict)
         updated_submission = crud.update_submission_feedback(db, submission_id=str(db_submission["_id"]), feedback_type="toy_feedback", feedback_data=toy_feedback_dict)
@@ -104,6 +117,8 @@ async def submit_design(
     if not updated_submission:
         raise HTTPException(status_code=404, detail="Submission not found after update.")
 
+    # Convert all ObjectIds to strings for FastAPI response validation
+    updated_submission = convert_objectids(updated_submission)
     return updated_submission
 
 @app.get("/feedback/{submission_id}", response_model=schemas.SubmissionResponse, tags=["Submissions"])
@@ -111,4 +126,6 @@ async def get_feedback(submission_id: str, db: Database = Depends(get_db)):
     db_submission = crud.get_submission(db, submission_id=submission_id)
     if db_submission is None:
         raise HTTPException(status_code=404, detail="Submission not found")
+    # Convert all ObjectIds to strings for FastAPI response validation
+    db_submission = convert_objectids(db_submission)
     return db_submission 

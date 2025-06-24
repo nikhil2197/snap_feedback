@@ -1,10 +1,9 @@
 const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8000";
 
 export interface CriterionFeedback {
-    criterion_name: string;
-    passed: boolean;
+    score: number;
     what_went_well: string;
-    what_could_be_better: string;
+    what_could_be_improved: string;
 }
 
 export interface SubmissionResponse {
@@ -12,8 +11,8 @@ export interface SubmissionResponse {
     playground_image_url: string;
     toy_image_url: string;
     activity_description?: string;
-    playground_feedback?: CriterionFeedback[];
-    toy_feedback?: CriterionFeedback[];
+    playground_feedback?: Record<string, CriterionFeedback>;
+    toy_feedback?: Record<string, CriterionFeedback>;
     created_at: string; // as ISO string
     updated_at: string; // as ISO string
 }

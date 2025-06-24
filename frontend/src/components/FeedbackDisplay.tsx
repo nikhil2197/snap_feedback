@@ -6,32 +6,49 @@ import type { SubmissionResponse, CriterionFeedback } from "@/lib/api";
 
 interface EvaluationSectionProps {
   title: string
-  feedback: CriterionFeedback[] | undefined
+  feedback: Record<string, CriterionFeedback> | undefined
 }
 
 function EvaluationSection({ title, feedback }: EvaluationSectionProps) {
+  const getScoreColor = (score: number) => {
+    if (score === 1) return 'text-green-600';
+    if (score === 0.5) return 'text-yellow-600';
+    return 'text-red-600';
+  };
+
+  const getScoreText = (score: number) => {
+    if (score === 1) return 'Perfect';
+    if (score === 0.5) return 'Partial';
+    return 'Not Done';
+  };
+
+  const getSignalColor = (score: number) => {
+    if (score === 1) return 'bg-green-500';
+    if (score === 0.5) return 'bg-yellow-400';
+    return 'bg-red-500';
+  };
+
   return (
     <Card className="w-full">
       <CardHeader>
         <CardTitle className="text-xl font-bold text-primary">{title}</CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
-        {feedback && feedback.length > 0 ? (
-          feedback.map((criterion, index) => (
+        {feedback && Object.keys(feedback).length > 0 ? (
+          Object.entries(feedback).map(([criterionName, criterion], index) => (
             <div key={index} className="space-y-3 p-4 border rounded-lg">
-              <h3 className="text-lg font-semibold text-foreground">{criterion.criterion_name}</h3>
-              <div className="space-y-2">
-                <p className={`font-medium ${criterion.passed ? 'text-green-600' : 'text-red-600'}`}>
-                  {criterion.passed ? "Pass" : "Fail"}
+              <h3 className="text-lg font-semibold text-foreground">{criterionName}</h3>
+              <div className="space-y-2 flex items-center gap-2">
+                <span className={`inline-block w-4 h-4 rounded-full ${getSignalColor(criterion.score)}`}></span>
+                <p className={`font-medium ${getScoreColor(criterion.score)}`}>
+                  {getScoreText(criterion.score)} ({criterion.score})
                 </p>
-                <div className="p-2 bg-muted/30 rounded-md">
-                    <p className="font-semibold text-sm">What went well:</p>
-                    <p className="text-muted-foreground text-sm">{criterion.what_went_well}</p>
-                </div>
-                <div className="p-2 bg-muted/30 rounded-md">
-                    <p className="font-semibold text-sm">What could be better:</p>
-                    <p className="text-muted-foreground text-sm">{criterion.what_could_be_better}</p>
-                </div>
+              </div>
+              <div className="p-2 bg-muted/30 rounded-md space-y-1">
+                <p className="font-semibold text-sm">What went well:</p>
+                <p className="text-muted-foreground text-sm">{criterion.what_went_well || '-'}</p>
+                <p className="font-semibold text-sm mt-2">What could be improved:</p>
+                <p className="text-muted-foreground text-sm">{criterion.what_could_be_improved || '-'}</p>
               </div>
             </div>
           ))
