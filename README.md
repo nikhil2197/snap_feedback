@@ -1,6 +1,10 @@
 # Play-based Classroom Feedback App
 
 A web application that utilizes AI to provide structured feedback on preschool play and toy designs. Upload playground and toy images, optionally add an activity description, and receive detailed evaluations across multiple play-based education criteria.
+  
+## Live Demo
+  
+Check out the working demo at: https://snap-feedback.vercel.app/
 ## Features
 - Two-step image uploads: playground & toy
 - Optional activity description with validation
@@ -16,14 +20,15 @@ AI feedback via OpenAI Vision-capable models; static images served at `/images`.
 ## Tech Stack
 - Frontend: Next.js, React, TypeScript, Tailwind CSS
 - Backend: FastAPI, Pydantic, Uvicorn
-- Database: MongoDB
+- Database: MongoDB (local or MongoDB Atlas in production)
 - AI: OpenAI Vision models via `openai` Python SDK
 - Containerization: Docker & Docker Compose
+- Deployment: Frontend on Vercel, Backend on Render, Database on MongoDB Atlas
 ## Prerequisites
 - Docker & Docker Compose (recommended)
 - Node.js & npm (for frontend dev)
 - Python 3.9+ & pip (for backend dev)
-- MongoDB instance (local or Docker)
+- MongoDB instance (local, Docker, or MongoDB Atlas)
 - OpenAI API key
 ## Getting Started
 ### Docker Compose (All-in-One)
@@ -51,6 +56,13 @@ npm install
 # Add .env.local with NEXT_PUBLIC_BACKEND_URL
 npm run dev
 ```
+
+## Deployment
+
+- Frontend: Hosted on Vercel at https://snap-feedback.vercel.app
+- Backend: Hosted on Render
+- Database: Hosted on MongoDB Atlas (set `MONGO_URI` in environment variables)
+
 ## API Endpoints
 - GET  /                Welcome message
 - POST /submit-design   Submit images & description, returns feedback
