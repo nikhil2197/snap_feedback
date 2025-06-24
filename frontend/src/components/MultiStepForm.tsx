@@ -42,18 +42,18 @@ export function MultiStepForm() {
 
   if (isLoading) {
     return (
-        <div className="flex flex-col items-center justify-center h-screen">
-            <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-primary"></div>
-            <p className="mt-4 text-muted-foreground">Generating feedback, please wait...</p>
+        <div className="flex flex-col items-center justify-center h-screen p-4">
+            <div className="animate-spin rounded-full h-24 w-24 sm:h-32 sm:w-32 border-t-2 border-b-2 border-primary"></div>
+            <p className="mt-4 text-sm sm:text-base text-muted-foreground text-center px-4">Generating feedback, please wait...</p>
         </div>
     );
   }
 
   if (error) {
     return (
-        <div className="flex flex-col items-center justify-center h-screen text-center">
-            <p className="text-destructive font-semibold">An Error Occurred</p>
-            <p className="text-muted-foreground mt-2">{error}</p>
+        <div className="flex flex-col items-center justify-center h-screen text-center p-4">
+            <p className="text-destructive font-semibold text-lg sm:text-xl">An Error Occurred</p>
+            <p className="text-muted-foreground mt-2 text-sm sm:text-base px-4">{error}</p>
         </div>
     )
   }
