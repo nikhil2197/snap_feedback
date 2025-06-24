@@ -3,11 +3,11 @@ import requests
 import json
 
 # === Update these paths to your local image files ===
-PLAYGROUND_IMAGE_PATH = "/Users/nikhilramesh/Downloads/Playground.png"
-TOY_IMAGE_PATH = "/Users/nikhilramesh/Downloads/Toy.png"
+PLAYGROUND_IMAGE_PATH = "filepath"
+TOY_IMAGE_PATH = "filepath"
 
 # === Optional: Update this description if you want ===
-ACTIVITY_DESCRIPTION = "Sample activity description for testing."
+ACTIVITY_DESCRIPTION = "description"
 
 def encode_image_to_base64(image_path):
     with open(image_path, "rb") as img_file:
