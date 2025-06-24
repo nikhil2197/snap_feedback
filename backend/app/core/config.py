@@ -1,8 +1,8 @@
 from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
-    MONGO_URI: str = "mongodb+srv://nikhilramesh:DZbCLVJeCeJ3Tmid@ohsnapfeedbackmvp.jrvt53p.mongodb.net/?retryWrites=true&w=majority&appName=ohsnapfeedbackmvp"
-    SECRET_KEY: str = "a_super_secret_key_that_should_be_changed"
+    MONGO_URI: str
+    SECRET_KEY: str
     OPENAI_API_KEY: str
     OPENAI_MODEL: str = "gpt-4.1-mini"
     AI_PLAYGROUND_PROMPT: str = """Role: You are an expert in the play-based method for prechools 
