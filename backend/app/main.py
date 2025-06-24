@@ -14,6 +14,12 @@ from .core import ai_models
 from .core.config import settings
 from .database import get_db
 
+# Validate required environment variables
+if not settings.MONGO_URI:
+    raise ValueError("MONGO_URI environment variable is required but not set")
+if not settings.OPENAI_API_KEY:
+    raise ValueError("OPENAI_API_KEY environment variable is required but not set")
+
 # Create uploads directory on startup
 os.makedirs("uploaded_images", exist_ok=True)
 

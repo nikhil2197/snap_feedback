@@ -1,9 +1,9 @@
 from pydantic_settings import BaseSettings
+import os
 
 class Settings(BaseSettings):
-    MONGO_URI: str
-    SECRET_KEY: str
-    OPENAI_API_KEY: str
+    MONGO_URI: str = ""
+    OPENAI_API_KEY: str = ""
     OPENAI_MODEL: str = "gpt-4.1-mini"
     AI_PLAYGROUND_PROMPT: str = """Role: You are an expert in the play-based method for prechools 
 Context: You have been brought on to consult for a pre-school that needs your help with evaluating their classroom experience on the following parameters:
