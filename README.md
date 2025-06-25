@@ -4,7 +4,8 @@ A web application that utilizes AI to provide structured feedback to preschool t
   
 ## Live Demo
   
-Check out the working demo at: https://snap-feedback.vercel.app/
+Check out the working demo at: https://snap-feedback.vercel.app/ using the demo images and activity descriptions provided in the `Demo_Images` folder
+
 ## Features
 - Two-step image uploads: playground & toy
 - Optional activity description with validation
