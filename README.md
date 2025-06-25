@@ -1,6 +1,6 @@
 # Play-based Classroom Feedback App
 
-A web application that utilizes AI to provide structured feedback on preschool play and toy designs. Upload playground and toy images, optionally add an activity description, and receive detailed evaluations across multiple play-based education criteria.
+A web application that utilizes AI to provide structured feedback to preschool teachers on their classroom and activity setup. Upload images of the classroom and activity, optionally add an activity description, and receive detailed evaluations across multiple play-based education criteria.
   
 ## Live Demo
   
