@@ -78,9 +78,9 @@ export function FeedbackDisplay({ submission }: { submission: SubmissionResponse
     <div className="min-h-screen bg-background p-3 sm:p-4 md:p-6 lg:p-8">
       <div className="max-w-4xl mx-auto space-y-6 sm:space-y-8">
         <div className="text-center space-y-2 sm:space-y-3">
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Design Evaluation Feedback</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Setup Feedback</h1>
           <p className="text-sm sm:text-base text-muted-foreground px-2">
-            Here is the AI-generated feedback for your designs.
+            Here is the AI-generated feedback for your setup.
           </p>
         </div>
 
