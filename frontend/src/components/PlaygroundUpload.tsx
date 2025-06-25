@@ -34,8 +34,8 @@ export function PlaygroundUpload({ selectedImage, onImageSelect, nextStep }: Pla
   return (
     <div className="w-full max-w-md mx-auto p-4 sm:p-6 space-y-4 sm:space-y-6">
       <div className="text-center">
-        <h1 className="text-xl sm:text-2xl font-semibold mb-2">Evaluate Setup</h1>
-        <p className="text-sm sm:text-base text-muted-foreground px-2">Add a picture of your environment - cover as much of the classroom as possible</p>
+        <h1 className="text-xl sm:text-2xl font-semibold mb-2">Evaluate Playground</h1>
+        <p className="text-sm sm:text-base text-muted-foreground px-2">Add a picture of your playground - cover as much of the environment as possible</p>
       </div>
 
       {/* Square Preview Area */}

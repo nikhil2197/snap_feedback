@@ -36,7 +36,7 @@ export function ToyUpload({ selectedImage, onImageSelect, nextStep, prevStep }: 
     <div className="w-full max-w-md mx-auto p-4 sm:p-6 space-y-4 sm:space-y-6">
       <div className="text-center">
         <h1 className="text-xl sm:text-2xl font-semibold mb-2">Evaluate Toy</h1>
-        <p className="text-sm sm:text-base text-muted-foreground px-2">Add a picture of the main toy - ensure that it is in focus and you have zoomed in appropriately</p>
+        <p className="text-sm sm:text-base text-muted-foreground px-2">Add a picture of the main toy / activity area - ensure the elements are in focus and you have zoomed in appropriately</p>
       </div>
 
       {/* Square Preview Area */}
