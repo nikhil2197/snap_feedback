@@ -19,7 +19,7 @@ export function ActivityDescription({ description, onDescriptionChange, prevStep
     <div className="min-h-screen bg-white flex flex-col">
       {/* Header */}
       <div className="px-4 sm:px-6 py-4 border-b border-gray-200">
-        <h1 className="text-lg sm:text-xl font-semibold text-gray-900 text-center">Describe the activity in 240 characters</h1>
+        <h1 className="text-lg sm:text-xl font-semibold text-gray-900 text-center">Step 3/3: Describe the activity in 240 characters</h1>
       </div>
 
       {/* Content */}
