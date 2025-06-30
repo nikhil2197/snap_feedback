@@ -114,7 +114,7 @@ export function ToyUpload({ selectedImages, onImagesChange, nextStep, prevStep }
   return (
     <div className="w-full max-w-md mx-auto p-4 sm:p-6 space-y-4 sm:space-y-6">
       <div className="text-center">
-        <h1 className="text-xl sm:text-2xl font-semibold mb-2">Evaluate Toy</h1>
+        <h1 className="text-xl sm:text-2xl font-semibold mb-2">Step 2/3:Evaluate Toy</h1>
         <p className="text-sm sm:text-base text-muted-foreground px-2">Add up to 3 pictures of the main toy / activity area - ensure the elements are in focus and you have zoomed in appropriately</p>
       </div>
 
@@ -238,13 +238,7 @@ export function ToyUpload({ selectedImages, onImagesChange, nextStep, prevStep }
       </div>
 
       {/* Upload Photo Button - only show if no images */}
-      {selectedImages.length === 0 && (
-        <Button onClick={() => handleUploadClick()} className="w-full h-12 sm:h-10">
-          <Upload className="h-4 w-4 mr-2" />
-          <span className="text-sm sm:text-base">Upload Photo</span>
-        </Button>
-      )}
-
+      {/* Removed the large Upload Photo button below the image box */}
       {/* Hidden File Input */}
       <input ref={fileInputRef} type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
 

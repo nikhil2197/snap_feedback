@@ -113,7 +113,7 @@ export function PlaygroundUpload({ selectedImages, onImagesChange, nextStep }: P
   return (
     <div className="w-full max-w-md mx-auto p-4 sm:p-6 space-y-4 sm:space-y-6">
       <div className="text-center">
-        <h1 className="text-xl sm:text-2xl font-semibold mb-2">Evaluate Playground</h1>
+        <h1 className="text-xl sm:text-2xl font-semibold mb-2">Step 1/3: Evaluate Playground</h1>
         <p className="text-sm sm:text-base text-muted-foreground px-2">Add up to 3 pictures of your playground - cover as much of the environment as possible</p>
       </div>
 
@@ -237,13 +237,7 @@ export function PlaygroundUpload({ selectedImages, onImagesChange, nextStep }: P
       </div>
 
       {/* Upload Photo Button - only show if no images */}
-      {selectedImages.length === 0 && (
-        <Button onClick={() => handleUploadClick()} className="w-full h-12 sm:h-10">
-          <Upload className="h-4 w-4 mr-2" />
-          <span className="text-sm sm:text-base">Upload Photo</span>
-        </Button>
-      )}
-
+      {/* Removed the large Upload Photo button below the image box */}
       {/* Hidden File Input */}
       <input ref={fileInputRef} type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
 
