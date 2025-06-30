@@ -11,6 +11,7 @@ from bson import ObjectId
 
 from . import crud, schemas
 from .core import ai_models
+import asyncio
 from .core.config import settings
 from .database import get_db
 
@@ -85,23 +86,22 @@ async def submit_design(
     }
     db_submission = crud.create_submission(db, submission_data=initial_submission_data)
 
-    # Get AI feedback for playground
-    playground_feedback_json = await ai_models.get_ai_feedback(
+    # Parallel AI feedback calls for playground and toy
+    t_playground = ai_models.get_ai_feedback(
         image_data_base64=submission.playground_image_data_base64.split(',')[1],
         text_description=submission.activity_description,
         prompt_base=settings.AI_PLAYGROUND_PROMPT,
         openai_api_key=settings.OPENAI_API_KEY,
         model_name=settings.OPENAI_MODEL
     )
-    
-    # Get AI feedback for toy
-    toy_feedback_json = await ai_models.get_ai_feedback(
+    t_toy = ai_models.get_ai_feedback(
         image_data_base64=submission.toy_image_data_base64.split(',')[1],
         text_description=submission.activity_description,
         prompt_base=settings.AI_TOY_PROMPT,
         openai_api_key=settings.OPENAI_API_KEY,
         model_name=settings.OPENAI_MODEL
     )
+    playground_feedback_json, toy_feedback_json = await asyncio.gather(t_playground, t_toy)
 
     # Validate and update DB with feedback
     try:
@@ -183,46 +183,44 @@ async def submit_design_multi(
     }
     db_submission = crud.create_submission_multi(db, submission_data=initial_submission_data)
 
-    # Get AI feedback for playground (all images)
+    # Parallel AI feedback calls for playground and toy images
     playground_images_base64 = [img.split(',')[1] for img in submission.playground_images_data_base64]
-    playground_feedback_json = await ai_models.get_ai_feedback_multi(
+    toy_images_base64 = [img.split(',')[1] for img in submission.toy_images_data_base64]
+    t_playground = ai_models.get_ai_feedback_multi(
         images_data_base64=playground_images_base64,
         text_description=submission.activity_description,
         prompt_base=settings.AI_PLAYGROUND_PROMPT,
         openai_api_key=settings.OPENAI_API_KEY,
         model_name=settings.OPENAI_MODEL
     )
-    
-    # Get AI feedback for toy (all images)
-    toy_images_base64 = [img.split(',')[1] for img in submission.toy_images_data_base64]
-    toy_feedback_json = await ai_models.get_ai_feedback_multi(
+    t_toy = ai_models.get_ai_feedback_multi(
         images_data_base64=toy_images_base64,
         text_description=submission.activity_description,
         prompt_base=settings.AI_TOY_PROMPT,
         openai_api_key=settings.OPENAI_API_KEY,
         model_name=settings.OPENAI_MODEL
     )
+    playground_feedback_json, toy_feedback_json = await asyncio.gather(t_playground, t_toy)
 
-    # Validate and update DB with feedback
+    # Validate and update DB with feedback (catching partial failures)
+    # Playground feedback
     try:
-        # The AI response should be a dictionary with criterion names as keys
-        # and objects with score and justification as values
         validated_playground_feedback = parse_obj_as(Dict[str, schemas.CriterionFeedback], playground_feedback_json)
-        validated_toy_feedback = parse_obj_as(Dict[str, schemas.CriterionFeedback], toy_feedback_json)
-        
-        # Convert pydantic models to dicts for the crud function
         playground_feedback_dict = {k: v.model_dump() for k, v in validated_playground_feedback.items()}
-        toy_feedback_dict = {k: v.model_dump() for k, v in validated_toy_feedback.items()}
-        
         crud.update_submission_feedback(db, submission_id=str(db_submission["_id"]), feedback_type="playground_feedback", feedback_data=playground_feedback_dict)
-        updated_submission = crud.update_submission_feedback(db, submission_id=str(db_submission["_id"]), feedback_type="toy_feedback", feedback_data=toy_feedback_dict)
+    except Exception as e:
+        print(f"Playground feedback error: {e}")
 
-    except ValidationError as e:
-        raise HTTPException(status_code=500, detail=f"AI returned data in an invalid format: {e}")
+    # Toy feedback
+    try:
+        validated_toy_feedback = parse_obj_as(Dict[str, schemas.CriterionFeedback], toy_feedback_json)
+        toy_feedback_dict = {k: v.model_dump() for k, v in validated_toy_feedback.items()}
+        crud.update_submission_feedback(db, submission_id=str(db_submission["_id"]), feedback_type="toy_feedback", feedback_data=toy_feedback_dict)
+    except Exception as e:
+        print(f"Toy feedback error: {e}")
 
-    if not updated_submission:
-        raise HTTPException(status_code=404, detail="Submission not found after update.")
-
+    # Fetch the fully updated submission
+    updated_submission = crud.get_submission(db, submission_id=str(db_submission["_id"]))
     # Convert all ObjectIds to strings for FastAPI response validation
     updated_submission = convert_objectids(updated_submission)
     return updated_submission
