@@ -7,12 +7,13 @@ A web application that utilizes AI to provide structured feedback to preschool t
 Check out the working demo at: https://snap-feedback.vercel.app/ using the demo images and activity descriptions provided in the `Demo_Images` folder
 
 ## Features
-- Two-step image uploads: playground & toy
-- Optional activity description with validation
-- AI-generated feedback across defined criteria for each image
+- Single-image upload for playground & toy (via `/submit-design`)
+- Multiple-image upload support (1–3 playground and 1–3 toy images) via `/submit-design-multi`
+- Optional activity description with validation (max 240 characters)
+- AI-generated feedback across defined play-based criteria
 - Persistent storage in MongoDB
 - Responsive multi-step UI built with Next.js & Tailwind CSS
-- Dockerized setup for frontend, backend, and database
+- Containerized setup for development & production using Docker & Docker Compose
 ## Architecture
 ```text
 Frontend (Next.js) <--> Backend (FastAPI + Uvicorn) <--> MongoDB
@@ -35,10 +36,18 @@ AI feedback via OpenAI Vision-capable models; static images served at `/images`.
 ### Docker Compose (All-in-One)
 ```bash
 export OPENAI_API_KEY="your_openai_api_key"
-docker-compose up --build
+docker-compose -f docker-compose.yml up --build
 ```
-- Frontend: http://localhost:3000
-- Backend:  http://localhost:8000
+- Frontend: http://localhost:3001
+- Backend:  http://localhost:8001
+  
+### Development with Docker Compose (Live Reload)
+```bash
+export OPENAI_API_KEY="your_openai_api_key"
+docker-compose -f docker-compose.dev.yml up --build
+```
+- Frontend: http://localhost:3001
+- Backend:  http://localhost:8001
 ### Local Development
 #### Backend
 ```bash
@@ -50,6 +59,8 @@ pip install -r requirements.txt
 # Create .env with OPENAI_API_KEY & optional MONGO_URI
 uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 ```
+- Backend: http://localhost:8000
+#### Frontend
 #### Frontend
 ```bash
 cd frontend
@@ -65,21 +76,34 @@ npm run dev
 - Database: Hosted on MongoDB Atlas (set `MONGO_URI` in environment variables)
 
 ## API Endpoints
-- GET  /                Welcome message
-- POST /submit-design   Submit images & description, returns feedback
-- GET  /feedback/{id}    Retrieve saved feedback
+- GET  /                      Welcome message
+- POST /submit-design         Submit single playground & toy images
+- POST /submit-design-multi   Submit multiple playground & toy images
+- GET  /feedback/{submission_id} Retrieve saved feedback
 ## Testing
-Use `test_submit_design.py` at project root; update image paths & run:
-```bash
-python test_submit_design.py
-```
+Use the following tests:
+- **Single-image endpoint**:  
+  ```bash
+  python test_submit_design.py
+  ```
+- **Multi-image endpoint**:  
+  ```bash
+  python test_multi_images.py
+  ```
+- **Frontend manual test**:  
+  Open `test_frontend.html` in your browser.
 ## Project Structure
 ```
-./
-├─ backend/          FastAPI service & AI logic
-├─ frontend/         Next.js UI
-├─ docker-compose.yml  Docker orchestration
-└─ test_submit_design.py  Example API client
+.
+├── backend/                 FastAPI service & AI logic
+├── frontend/                Next.js UI
+├── Demo_Images/             Example images and descriptions
+├── docker-compose.yml       Production Docker Compose
+├── docker-compose.dev.yml   Development Docker Compose
+├── test_submit_design.py    Single-image API test
+├── test_multi_images.py     Multi-image API test
+├── test_frontend.html       Frontend manual test
+└── README.md
 ```
 ## License
 MIT (add LICENSE file)
