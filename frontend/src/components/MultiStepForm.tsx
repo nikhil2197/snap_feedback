@@ -5,15 +5,15 @@ import { PlaygroundUpload } from "./PlaygroundUpload";
 import { ToyUpload } from "./ToyUpload";
 import { ActivityDescription } from "./ActivityDescription";
 import { FeedbackDisplay } from "./FeedbackDisplay";
-import { submitDesign } from "@/lib/api";
+import { submitDesignMulti } from "@/lib/api";
 import type { SubmissionResponse } from "@/lib/api";
 
 export function MultiStepForm() {
   const [step, setStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [playgroundImage, setPlaygroundImage] = useState<string | null>(null);
-  const [toyImage, setToyImage] = useState<string | null>(null);
+  const [playgroundImages, setPlaygroundImages] = useState<string[]>([]);
+  const [toyImages, setToyImages] = useState<string[]>([]);
   const [activityDescription, setActivityDescription] = useState("");
   const [submission, setSubmission] = useState<SubmissionResponse | null>(null);
 
@@ -21,11 +21,11 @@ export function MultiStepForm() {
   const prevStep = () => setStep((prev) => prev - 1);
 
   const handleSubmit = async () => {
-    if (playgroundImage && toyImage) {
+    if (playgroundImages.length > 0 && toyImages.length > 0) {
       setIsLoading(true);
       setError(null);
       try {
-        const response = await submitDesign(playgroundImage, toyImage, activityDescription);
+        const response = await submitDesignMulti(playgroundImages, toyImages, activityDescription);
         setSubmission(response);
         nextStep();
       } catch (e) {
@@ -62,16 +62,16 @@ export function MultiStepForm() {
     case 1:
       return (
         <PlaygroundUpload
-          selectedImage={playgroundImage}
-          onImageSelect={setPlaygroundImage}
+          selectedImages={playgroundImages}
+          onImagesChange={setPlaygroundImages}
           nextStep={nextStep}
         />
       );
     case 2:
       return (
         <ToyUpload
-            selectedImage={toyImage}
-            onImageSelect={setToyImage}
+            selectedImages={toyImages}
+            onImagesChange={setToyImages}
             nextStep={nextStep}
             prevStep={prevStep}
         />
@@ -90,8 +90,8 @@ export function MultiStepForm() {
     default:
         return (
             <PlaygroundUpload
-              selectedImage={playgroundImage}
-              onImageSelect={setPlaygroundImage}
+              selectedImages={playgroundImages}
+              onImagesChange={setPlaygroundImages}
               nextStep={nextStep}
             />
           );

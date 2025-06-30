@@ -8,8 +8,8 @@ export interface CriterionFeedback {
 
 export interface SubmissionResponse {
     id: string;
-    playground_image_url: string;
-    toy_image_url: string;
+    playground_image_urls: string[];
+    toy_image_urls: string[];
     activity_description?: string;
     playground_feedback?: Record<string, CriterionFeedback>;
     toy_feedback?: Record<string, CriterionFeedback>;
@@ -30,6 +30,31 @@ export async function submitDesign(
         body: JSON.stringify({
             playground_image_data_base64: playgroundImageBase64,
             toy_image_data_base64: toyImageBase64,
+            activity_description: activityDescription,
+        }),
+    });
+
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.detail || "Failed to submit design");
+    }
+
+    return response.json();
+}
+
+export async function submitDesignMulti(
+    playgroundImagesBase64: string[],
+    toyImagesBase64: string[],
+    activityDescription: string
+): Promise<SubmissionResponse> {
+    const response = await fetch(`${API_BASE_URL}/submit-design-multi`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            playground_images_data_base64: playgroundImagesBase64,
+            toy_images_data_base64: toyImagesBase64,
             activity_description: activityDescription,
         }),
     });

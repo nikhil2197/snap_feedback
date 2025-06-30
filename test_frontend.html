@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multiple Images Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+        }
+        .image-preview {
+            display: flex;
+            gap: 10px;
+            margin: 10px 0;
+            flex-wrap: wrap;
+        }
+        .image-item {
+            position: relative;
+            width: 150px;
+            height: 150px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .image-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .image-counter {
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+        .image-actions {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            display: flex;
+            gap: 5px;
+        }
+        .btn {
+            padding: 4px 8px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 10px;
+        }
+        .btn-replace {
+            background: rgba(0,0,0,0.7);
+            color: white;
+        }
+        .btn-remove {
+            background: rgba(255,0,0,0.8);
+            color: white;
+        }
+        .add-image {
+            width: 150px;
+            height: 150px;
+            border: 2px dashed #ccc;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            background: #f9f9f9;
+        }
+        .add-image:hover {
+            background: #f0f0f0;
+        }
+        .status {
+            margin: 10px 0;
+            padding: 10px;
+            background: #e8f5e8;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Multiple Images Upload Test</h1>
+    
+    <div class="test-section">
+        <h2>Playground Images</h2>
+        <div id="playground-images" class="image-preview"></div>
+        <input type="file" id="playground-input" accept="image/*" multiple style="display: none;">
+        <button onclick="document.getElementById('playground-input').click()">Add Playground Image</button>
+        <div id="playground-status" class="status">No images uploaded</div>
+    </div>
+
+    <div class="test-section">
+        <h2>Toy Images</h2>
+        <div id="toy-images" class="image-preview"></div>
+        <input type="file" id="toy-input" accept="image/*" multiple style="display: none;">
+        <button onclick="document.getElementById('toy-input').click()">Add Toy Image</button>
+        <div id="toy-status" class="status">No images uploaded</div>
+    </div>
+
+    <div class="test-section">
+        <h2>Test Results</h2>
+        <div id="test-results"></div>
+    </div>
+
+    <script>
+        let playgroundImages = [];
+        let toyImages = [];
+        const MAX_IMAGES = 3;
+
+        function updateImageDisplay(images, containerId, statusId) {
+            const container = document.getElementById(containerId);
+            const status = document.getElementById(statusId);
+            
+            container.innerHTML = '';
+            
+            // Display existing images
+            images.forEach((image, index) => {
+                const imageItem = document.createElement('div');
+                imageItem.className = 'image-item';
+                
+                const img = document.createElement('img');
+                img.src = image;
+                
+                const counter = document.createElement('div');
+                counter.className = 'image-counter';
+                counter.textContent = `${index + 1}/${images.length}`;
+                
+                const actions = document.createElement('div');
+                actions.className = 'image-actions';
+                
+                const replaceBtn = document.createElement('button');
+                replaceBtn.className = 'btn btn-replace';
+                replaceBtn.textContent = 'Replace';
+                replaceBtn.onclick = () => replaceImage(index, containerId === 'playground-images' ? 'playground' : 'toy');
+                
+                const removeBtn = document.createElement('button');
+                removeBtn.className = 'btn btn-remove';
+                removeBtn.textContent = '×';
+                removeBtn.onclick = () => removeImage(index, containerId === 'playground-images' ? 'playground' : 'toy');
+                
+                actions.appendChild(replaceBtn);
+                actions.appendChild(removeBtn);
+                
+                imageItem.appendChild(img);
+                imageItem.appendChild(counter);
+                imageItem.appendChild(actions);
+                container.appendChild(imageItem);
+            });
+            
+            // Add "add image" button if under limit
+            if (images.length < MAX_IMAGES) {
+                const addButton = document.createElement('div');
+                addButton.className = 'add-image';
+                addButton.innerHTML = `
+                    <div style="font-size: 24px;">+</div>
+                    <div style="font-size: 12px;">Add Image</div>
+                `;
+                addButton.onclick = () => {
+                    const inputId = containerId === 'playground-images' ? 'playground-input' : 'toy-input';
+                    document.getElementById(inputId).click();
+                };
+                container.appendChild(addButton);
+            }
+            
+            // Update status
+            status.textContent = `${images.length} image(s) uploaded (max ${MAX_IMAGES})`;
+            status.style.background = images.length > 0 ? '#e8f5e8' : '#fff3cd';
+        }
+
+        function addImage(file, type) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const images = type === 'playground' ? playgroundImages : toyImages;
+                if (images.length < MAX_IMAGES) {
+                    images.push(e.target.result);
+                    updateImageDisplay(images, 
+                        type === 'playground' ? 'playground-images' : 'toy-images',
+                        type === 'playground' ? 'playground-status' : 'toy-status'
+                    );
+                    updateTestResults();
+                }
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function removeImage(index, type) {
+            const images = type === 'playground' ? playgroundImages : toyImages;
+            images.splice(index, 1);
+            updateImageDisplay(images, 
+                type === 'playground' ? 'playground-images' : 'toy-images',
+                type === 'playground' ? 'playground-status' : 'toy-status'
+            );
+            updateTestResults();
+        }
+
+        function replaceImage(index, type) {
+            const inputId = type === 'playground' ? 'playground-input' : 'toy-input';
+            const input = document.getElementById(inputId);
+            input.onchange = function(e) {
+                if (e.target.files && e.target.files[0]) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const images = type === 'playground' ? playgroundImages : toyImages;
+                        images[index] = e.target.result;
+                        updateImageDisplay(images, 
+                            type === 'playground' ? 'playground-images' : 'toy-images',
+                            type === 'playground' ? 'playground-status' : 'toy-status'
+                        );
+                        updateTestResults();
+                    };
+                    reader.readAsDataURL(e.target.files[0]);
+                }
+            };
+            input.click();
+        }
+
+        function updateTestResults() {
+            const results = document.getElementById('test-results');
+            results.innerHTML = `
+                <h3>Test Summary:</h3>
+                <ul>
+                    <li>✅ Multiple image upload: ${playgroundImages.length > 1 || toyImages.length > 1 ? 'Working' : 'Not tested'}</li>
+                    <li>✅ Image counter: ${playgroundImages.length > 0 || toyImages.length > 0 ? 'Working' : 'Not tested'}</li>
+                    <li>✅ Remove functionality: Available</li>
+                    <li>✅ Replace functionality: Available</li>
+                    <li>✅ Max limit enforcement: ${playgroundImages.length === MAX_IMAGES || toyImages.length === MAX_IMAGES ? 'Working' : 'Not tested'}</li>
+                </ul>
+                <p><strong>Playground Images:</strong> ${playgroundImages.length}</p>
+                <p><strong>Toy Images:</strong> ${toyImages.length}</p>
+            `;
+        }
+
+        // Set up file input handlers
+        document.getElementById('playground-input').addEventListener('change', function(e) {
+            if (e.target.files && e.target.files[0]) {
+                addImage(e.target.files[0], 'playground');
+            }
+        });
+
+        document.getElementById('toy-input').addEventListener('change', function(e) {
+            if (e.target.files && e.target.files[0]) {
+                addImage(e.target.files[0], 'toy');
+            }
+        });
+
+        // Initialize displays
+        updateImageDisplay(playgroundImages, 'playground-images', 'playground-status');
+        updateImageDisplay(toyImages, 'toy-images', 'toy-status');
+        updateTestResults();
+    </script>
+</body>
+</html> 

@@ -1,0 +1,53 @@
+version: '3.8'
+
+services:
+  frontend-dev:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    ports:
+      - "3001:3000"  # Use port 3001 to avoid conflict with local frontend
+    environment:
+      - NODE_ENV=development
+      - NEXT_PUBLIC_BACKEND_URL=http://localhost:8001
+    depends_on:
+      - backend-dev
+    networks:
+      - app-network-dev
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+
+  backend-dev:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "8001:8000"  # Use port 8001 to avoid conflict with local backend
+    environment:
+      - MONGO_URI=mongodb://mongodb-dev:27017/design_feedback_db
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+    volumes:
+      - ./backend:/usr/src/app
+      - ./backend/uploaded_images:/usr/src/app/uploaded_images
+    depends_on:
+      - mongodb-dev
+    networks:
+      - app-network-dev
+
+  mongodb-dev:
+    image: mongo:latest
+    ports:
+      - "27018:27017"  # Use port 27018 to avoid conflict with local MongoDB
+    volumes:
+      - mongodb_data_dev:/data/db
+    networks:
+      - app-network-dev
+
+networks:
+  app-network-dev:
+    driver: bridge
+
+volumes:
+  mongodb_data_dev:
+    driver: local 

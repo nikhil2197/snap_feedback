@@ -43,6 +43,11 @@ class SubmissionCreate(BaseModel):
     toy_image_data_base64: str
     activity_description: Optional[str] = None
 
+class SubmissionCreateMulti(BaseModel):
+    playground_images_data_base64: List[str] = Field(..., min_items=1, max_items=3)
+    toy_images_data_base64: List[str] = Field(..., min_items=1, max_items=3)
+    activity_description: Optional[str] = None
+
 class SubmissionInDB(BaseModel):
     id: PyObjectId = Field(default_factory=PyObjectId, alias="_id")
     playground_image_url: str
@@ -59,10 +64,42 @@ class SubmissionInDB(BaseModel):
         json_encoders={ObjectId: str},
     )
 
+class SubmissionInDBMulti(BaseModel):
+    id: PyObjectId = Field(default_factory=PyObjectId, alias="_id")
+    playground_image_urls: List[str]
+    toy_image_urls: List[str]
+    activity_description: Optional[str] = None
+    playground_feedback: Optional[Dict[str, CriterionFeedback]] = None
+    toy_feedback: Optional[Dict[str, CriterionFeedback]] = None
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
+    
+    model_config = ConfigDict(
+        populate_by_name=True,
+        arbitrary_types_allowed=True,
+        json_encoders={ObjectId: str},
+    )
+
 class SubmissionResponse(BaseModel):
     id: str = Field(alias="_id")
     playground_image_url: str
     toy_image_url: str
+    activity_description: Optional[str] = None
+    playground_feedback: Optional[Dict[str, CriterionFeedback]] = None
+    toy_feedback: Optional[Dict[str, CriterionFeedback]] = None
+    created_at: datetime
+    updated_at: datetime
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+        arbitrary_types_allowed=True,
+        json_encoders={ObjectId: str},
+    )
+
+class SubmissionResponseMulti(BaseModel):
+    id: str = Field(alias="_id")
+    playground_image_urls: List[str]
+    toy_image_urls: List[str]
     activity_description: Optional[str] = None
     playground_feedback: Optional[Dict[str, CriterionFeedback]] = None
     toy_feedback: Optional[Dict[str, CriterionFeedback]] = None

@@ -15,6 +15,16 @@ def create_submission(db: Database, *, submission_data: dict) -> Dict:
     inserted_doc = db[SUBMISSION_COLLECTION].find_one({"_id": result.inserted_id})
     return inserted_doc
 
+def create_submission_multi(db: Database, *, submission_data: dict) -> Dict:
+    """
+    Inserts a new submission record with multiple images into the database.
+    """
+    submission_data['created_at'] = datetime.utcnow()
+    submission_data['updated_at'] = datetime.utcnow()
+    result = db[SUBMISSION_COLLECTION].insert_one(submission_data)
+    inserted_doc = db[SUBMISSION_COLLECTION].find_one({"_id": result.inserted_id})
+    return inserted_doc
+
 def get_submission(db: Database, *, submission_id: str) -> Optional[Dict]:
     """
     Retrieves a submission by its ID.
