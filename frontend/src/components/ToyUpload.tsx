@@ -48,34 +48,43 @@ export function ToyUpload({ selectedImages, onImagesChange, nextStep, prevStep }
   }
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0]
-    if (file) {
-      const reader = new FileReader()
-      reader.onload = (e) => {
-        const newImage = e.target?.result as string
-        if (currentImageIndex !== null) {
-          // Replace existing image
-          const updatedImages = [...selectedImages]
-          updatedImages[currentImageIndex] = newImage
-          onImagesChange(updatedImages)
-          setCurrentImageIndex(null)
-        } else {
-          // Add new image
-          if (selectedImages.length < 3) {
-            onImagesChange([...selectedImages, newImage])
-            setCurrentSlide(selectedImages.length) // Move to the new image
-          }
-        }
+    const files = event.target.files;
+    if (files && files.length > 0) {
+      if (files.length > 3 - selectedImages.length) {
+        alert('You can only select up to 3 images.');
+        if (fileInputRef.current) fileInputRef.current.value = '';
+        return;
       }
-      reader.readAsDataURL(file)
+      const filesArray = Array.from(files).slice(0, 3 - selectedImages.length);
+      const readers = filesArray.map(file => {
+        return new Promise<string>((resolve) => {
+          const reader = new FileReader();
+          reader.onload = (e) => resolve(e.target?.result as string);
+          reader.readAsDataURL(file);
+        });
+      });
+      Promise.all(readers).then((newImages) => {
+        const updatedImages = [...selectedImages];
+        if (currentImageIndex !== null && filesArray.length === 1) {
+          // Replace existing image if only one file is selected for replace
+          updatedImages[currentImageIndex] = newImages[0];
+        } else {
+          // Add new images (up to 3 total)
+          updatedImages.push(...newImages);
+        }
+        onImagesChange(updatedImages.slice(0, 3));
+        setCurrentImageIndex(null);
+        setCurrentSlide(updatedImages.length > 0 ? updatedImages.length - 1 : 0);
+      });
     }
     // Reset file input
     if (fileInputRef.current) {
-      fileInputRef.current.value = ''
+      fileInputRef.current.value = '';
     }
   }
 
   const handleUploadClick = (index?: number) => {
+    if (selectedImages.length >= 3) return; // Block file picker if already 3 images
     setCurrentImageIndex(index !== undefined ? index : null)
     fileInputRef.current?.click()
   }
@@ -186,6 +195,7 @@ export function ToyUpload({ selectedImages, onImagesChange, nextStep, prevStep }
                       size="sm"
                       className="mt-2"
                       onClick={() => handleUploadClick()}
+                      disabled={selectedImages.length >= 3}
                     >
                       <Upload className="h-4 w-4 mr-2" />
                       Upload
@@ -240,7 +250,7 @@ export function ToyUpload({ selectedImages, onImagesChange, nextStep, prevStep }
       {/* Upload Photo Button - only show if no images */}
       {/* Removed the large Upload Photo button below the image box */}
       {/* Hidden File Input */}
-      <input ref={fileInputRef} type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
+      <input ref={fileInputRef} type="file" accept="image/*" multiple onChange={handleImageUpload} className="hidden" />
 
       {/* Action Buttons */}
       <div className="flex flex-col gap-2 sm:flex-row sm:gap-4">
