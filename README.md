@@ -1,16 +1,29 @@
 # Play-based Classroom Feedback App
 
-A web application that utilizes AI to provide structured feedback to preschool teachers on their classroom and activity setup. Upload images of the classroom and activity, optionally add an activity description, and receive detailed evaluations across multiple play-based education criteria.
+A web application that utilizes AI to provide structured feedback and improvement suggestions to preschool teachers on their classroom and activity setup.
+Upload images of the classroom and activity with an optional activity description; the AI then produces detailed evaluations and high-context improvement suggestions synthesized from the uploaded images, the activity description, and the generated evaluation across multiple play-based education criteria.
   
+This project was conceived and built end-to-end using AI assistance, based on the following workflow:
+- Feature Definition (based on business needs and user feedback)
+- PRD creation using ChatGPT
+- Implementation in Cursor using the PRD
+
 ## Live Demo
   
 Check out the working demo at: https://snap-feedback.vercel.app/ using the demo images and activity descriptions provided in the `Demo_Images` folder
 
+## Video Walkthrough
+
+A full video walkthrough is available in the `Video_Walkthrough.mp4` file in the repository root. This video demonstrates all key features—including image uploads, optional activity descriptions, AI-generated evaluations, and high-context improvement suggestions—in a single cohesive session.
+To view the walkthrough, open the file with your preferred media player or click the link below:
+
+[Full Video Walkthrough](Video_Walkthrough.mp4)
+
 ## Features
-- Single-image upload for playground & toy (via `/submit-design`)
-- Multiple-image upload support (1–3 playground and 1–3 toy images) via `/submit-design-multi`
-- Optional activity description with validation (max 240 characters)
-- AI-generated feedback across defined play-based criteria
+- Single-image upload for playground & toy via `/submit-design`, receive AI-generated evaluations and improvement suggestions
+- Multiple-image upload support (1–3 playground and 1–3 toy images) via `/submit-design-multi`, receive AI-generated evaluations and improvement suggestions
+- Optional activity description with validation (max 240 characters). The AI leverages this description along with the uploaded images and generated evaluation to produce high-context improvement suggestions.
+- AI-generated evaluations across defined play-based criteria; improvement suggestions synthesized from images, optional activity description, and evaluation context
 - Persistent storage in MongoDB
 - Responsive multi-step UI built with Next.js & Tailwind CSS
 - Containerized setup for development & production using Docker & Docker Compose
@@ -77,9 +90,9 @@ npm run dev
 
 ## API Endpoints
 - GET  /                      Welcome message
-- POST /submit-design         Submit single playground & toy images
-- POST /submit-design-multi   Submit multiple playground & toy images
-- GET  /feedback/{submission_id} Retrieve saved feedback
+- POST /submit-design         Submit single playground & toy images (plus optional activity description); returns AI-generated evaluation and high-context improvement suggestions
+- POST /submit-design-multi   Submit multiple playground & toy images (plus optional activity description); returns AI-generated evaluation and high-context improvement suggestions
+- GET  /feedback/{submission_id} Retrieve saved AI-generated evaluation and high-context improvement suggestions
 ## Testing
 Use the following tests:
 - **Single-image endpoint**:  
@@ -103,6 +116,7 @@ Use the following tests:
 ├── test_submit_design.py    Single-image API test
 ├── test_multi_images.py     Multi-image API test
 ├── test_frontend.html       Frontend manual test
+├── Video_Walkthrough.mp4    Full video walkthrough of the application
 └── README.md
 ```
 ## License
