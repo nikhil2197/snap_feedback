@@ -32,6 +32,70 @@ To view the walkthrough, open the file with your preferred media player or click
 Frontend (Next.js) <--> Backend (FastAPI + Uvicorn) <--> MongoDB
 ```
 AI feedback via OpenAI Vision-capable models; static images served at `/images`.
+
+## AI Workflow
+
+```
+Playground Image(s) ──┐
+                      │
+                      ▼
+                ┌────────────────────────────┐
+                │  Playground Analyzer       │
+                │    (GPT-4.1-mini)        │
+                └────────────┬───────────────┘
+                             │
+Activity Description ────────┘
+                             │
+                             ▼
+                   ┌────────────────────┐
+                   │ Playground Eval    │
+                   └─────────┬──────────┘
+                             │
+                             ▼
+Playground Image(s) ──┬──────┴───────┬──── Activity Description
+                      │              │
+                      ▼              ▼
+                ┌───────────────────────────────┐
+                │ Playground Suggestion         │
+                │ Generator (GPT-4.1-mini)    │
+                └────────────┬──────────────────┘
+                             │
+                             ▼
+                ┌───────────────────────────────┐
+                │ Playground Improvement        │
+                │ Suggestion                    │
+                └───────────────────────────────┘
+
+Toy Image(s) ─────┐
+                  │
+                  ▼
+            ┌────────────────────────────┐
+            │  Toy Analyzer              │
+            │   (GPT-4.1-mini)         │
+            └────────────┬───────────────┘
+                         │
+Activity Description ────┘
+                         │
+                         ▼
+               ┌────────────────────┐
+               │ Toy Eval           │
+               └─────────┬──────────┘
+                         │
+                         ▼
+Toy Image(s) ─────┬──────┴───────┬──── Activity Description
+                  │              │
+                  ▼              ▼
+            ┌───────────────────────────────┐
+            │ Toy Suggestion                │
+            │ Generator (GPT-4.1-mini)    │
+            └────────────┬──────────────────┘
+                         │
+                         ▼
+            ┌───────────────────────────────┐
+            │ Toy Improvement Suggestion    │
+            └───────────────────────────────┘
+```
+
 ## Tech Stack
 - Frontend: Next.js, React, TypeScript, Tailwind CSS
 - Backend: FastAPI, Pydantic, Uvicorn
