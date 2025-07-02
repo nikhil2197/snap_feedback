@@ -35,65 +35,14 @@ AI feedback via OpenAI Vision-capable models; static images served at `/images`.
 
 ## AI Workflow
 
-```
-Playground Image(s) ──┐
-                      │
-                      ▼
-                ┌────────────────────────────┐
-                │  Playground Analyzer       │
-                │    (GPT-4.1-mini)        │
-                └────────────┬───────────────┘
-                             │
-Activity Description ────────┘
-                             │
-                             ▼
-                   ┌────────────────────┐
-                   │ Playground Eval    │
-                   └─────────┬──────────┘
-                             │
-                             ▼
-Playground Image(s) ──┬──────┴───────┬──── Activity Description
-                      │              │
-                      ▼              ▼
-                ┌───────────────────────────────┐
-                │ Playground Suggestion         │
-                │ Generator (GPT-4.1-mini)    │
-                └────────────┬──────────────────┘
-                             │
-                             ▼
-                ┌───────────────────────────────┐
-                │ Playground Improvement        │
-                │ Suggestion                    │
-                └───────────────────────────────┘
+Below are the processing pipelines for Playground and Toy feedback (left-to-right):
 
-Toy Image(s) ─────┐
-                  │
-                  ▼
-            ┌────────────────────────────┐
-            │  Toy Analyzer              │
-            │   (GPT-4.1-mini)         │
-            └────────────┬───────────────┘
-                         │
-Activity Description ────┘
-                         │
-                         ▼
-               ┌────────────────────┐
-               │ Toy Eval           │
-               └─────────┬──────────┘
-                         │
-                         ▼
-Toy Image(s) ─────┬──────┴───────┬──── Activity Description
-                  │              │
-                  ▼              ▼
-            ┌───────────────────────────────┐
-            │ Toy Suggestion                │
-            │ Generator (GPT-4.1-mini)    │
-            └────────────┬──────────────────┘
-                         │
-                         ▼
-            ┌───────────────────────────────┐
-            │ Toy Improvement Suggestion    │
-            └───────────────────────────────┘
+```text
+### Playground: 
+Image(s) + Activity Description --> Playground Analyzer (GPT-4.1-mini) --> Playground Eval --> Playground Suggestion Generator (GPT-4.1-mini; inputs: Image(s), Playground Eval, Activity Description) --> Playground Improvement Suggestion
+
+### Toy:
+Image(s) + Activity Description --> Toy Analyzer (GPT-4.1-mini) --> Toy Eval --> Toy Suggestion Generator (GPT-4.1-mini; inputs: Image(s), Toy Eval, Activity Description) --> Toy Improvement Suggestion
 ```
 
 ## Tech Stack
