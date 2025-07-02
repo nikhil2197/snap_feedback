@@ -1,4 +1,4 @@
-const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8000";
+const API_BASE_URL = "/api";
 
 export interface CriterionFeedback {
     score: number;
@@ -13,6 +13,15 @@ export interface SubmissionResponse {
     activity_description?: string;
     playground_feedback?: Record<string, CriterionFeedback>;
     toy_feedback?: Record<string, CriterionFeedback>;
+    created_at: string; // as ISO string
+    updated_at: string; // as ISO string
+}
+
+export interface ImprovementSuggestionsResponse {
+    id: string;
+    submission_id: string;
+    playground_suggestions?: Record<string, string[]>;
+    toy_suggestions?: Record<string, string[]>;
     created_at: string; // as ISO string
     updated_at: string; // as ISO string
 }
@@ -75,6 +84,37 @@ export async function getFeedback(
     if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.detail || "Failed to fetch feedback");
+    }
+    
+    return response.json();
+}
+
+export async function getImprovementSuggestions(
+    submissionId: string
+): Promise<ImprovementSuggestionsResponse> {
+    const response = await fetch(`${API_BASE_URL}/improvement-suggestions/${submissionId}`);
+    
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.detail || "Failed to fetch improvement suggestions");
+    }
+    
+    return response.json();
+}
+
+export async function regenerateImprovementSuggestions(
+    submissionId: string
+): Promise<{ message: string }> {
+    const response = await fetch(`${API_BASE_URL}/improvement-suggestions/${submissionId}/regenerate`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+    });
+    
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.detail || "Failed to regenerate improvement suggestions");
     }
     
     return response.json();

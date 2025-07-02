@@ -53,8 +53,19 @@ function EvaluationSection({ feedback }: { feedback: Record<string, CriterionFee
   )
 }
 
-export function FeedbackDisplay({ submission }: { submission: SubmissionResponse | null }) {
+export function FeedbackDisplay({ 
+  submission, 
+  submissionId,
+  onShowImprovementSuggestions 
+}: { 
+  submission: SubmissionResponse | null;
+  submissionId: string | null;
+  onShowImprovementSuggestions: () => void;
+}) {
     const [selectedTab, setSelectedTab] = useState<'playground' | 'toy'>('playground');
+
+    // Debug logging
+    console.log('FeedbackDisplay:', { submission, submissionId });
 
     if (!submission) {
         return (
@@ -73,9 +84,9 @@ export function FeedbackDisplay({ submission }: { submission: SubmissionResponse
     <div className="min-h-screen bg-background p-3 sm:p-4 md:p-6 lg:p-8">
       <div className="max-w-4xl mx-auto space-y-6 sm:space-y-8">
         <div className="text-center space-y-2 sm:space-y-3">
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Feedback</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Evaluation Results</h1>
           <p className="text-sm sm:text-base text-muted-foreground px-2">
-            Switch between playground and toy design tabs to see the feedback for each.
+            Switch between playground and toy design tabs to see the evaluation results for each.
           </p>
         </div>
 
@@ -109,8 +120,21 @@ export function FeedbackDisplay({ submission }: { submission: SubmissionResponse
           </div>
         </div>
 
-        <div className="flex justify-center pt-4 sm:pt-6">
-          <Button size="lg" className="px-6 sm:px-8 h-12 sm:h-14 text-base sm:text-lg" onClick={() => window.location.reload()}>
+        <div className="flex flex-col sm:flex-row justify-center pt-4 sm:pt-6 space-y-4 sm:space-y-0 sm:space-x-4">
+          <Button 
+            size="lg" 
+            className="px-6 sm:px-8 h-12 sm:h-14 text-base sm:text-lg" 
+            onClick={onShowImprovementSuggestions}
+            disabled={!submissionId}
+          >
+            Improvement Suggestions
+          </Button>
+          <Button 
+            variant="outline"
+            size="lg" 
+            className="px-6 sm:px-8 h-12 sm:h-14 text-base sm:text-lg" 
+            onClick={() => window.location.reload()}
+          >
             Start New Evaluation
           </Button>
         </div>

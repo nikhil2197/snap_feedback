@@ -5,6 +5,7 @@ import { PlaygroundUpload } from "./PlaygroundUpload";
 import { ToyUpload } from "./ToyUpload";
 import { ActivityDescription } from "./ActivityDescription";
 import { FeedbackDisplay } from "./FeedbackDisplay";
+import { ImprovementSuggestions } from "./ImprovementSuggestions";
 import { submitDesignMulti } from "@/lib/api";
 import type { SubmissionResponse } from "@/lib/api";
 
@@ -16,6 +17,8 @@ export function MultiStepForm() {
   const [toyImages, setToyImages] = useState<string[]>([]);
   const [activityDescription, setActivityDescription] = useState("");
   const [submission, setSubmission] = useState<SubmissionResponse | null>(null);
+  const [showImprovementSuggestions, setShowImprovementSuggestions] = useState(false);
+  const [submissionId, setSubmissionId] = useState<string | null>(null);
 
   const nextStep = () => setStep((prev) => prev + 1);
   const prevStep = () => setStep((prev) => prev - 1);
@@ -27,6 +30,7 @@ export function MultiStepForm() {
       try {
         const response = await submitDesignMulti(playgroundImages, toyImages, activityDescription);
         setSubmission(response);
+        setSubmissionId((response as any)._id || response.id);
         nextStep();
       } catch (e) {
         if (e instanceof Error) {
@@ -39,6 +43,14 @@ export function MultiStepForm() {
       }
     }
   }
+
+  const handleShowImprovementSuggestions = () => {
+    setShowImprovementSuggestions(true);
+  };
+
+  const handleBackToEvaluation = () => {
+    setShowImprovementSuggestions(false);
+  };
 
   if (isLoading) {
     return (
@@ -56,6 +68,16 @@ export function MultiStepForm() {
             <p className="text-muted-foreground mt-2 text-sm sm:text-base px-4">{error}</p>
         </div>
     )
+  }
+
+  // Show improvement suggestions if requested
+  if (showImprovementSuggestions && submissionId) {
+    return (
+      <ImprovementSuggestions 
+        submissionId={submissionId}
+        onBackToEvaluation={handleBackToEvaluation}
+      />
+    );
   }
 
   switch (step) {
@@ -86,7 +108,13 @@ export function MultiStepForm() {
         />
     );
     case 4:
-      return <FeedbackDisplay submission={submission} />;
+      return (
+        <FeedbackDisplay 
+          submission={submission} 
+          submissionId={submissionId}
+          onShowImprovementSuggestions={handleShowImprovementSuggestions}
+        />
+      );
     default:
         return (
             <PlaygroundUpload

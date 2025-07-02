@@ -35,6 +35,10 @@ class CriterionFeedback(BaseModel):
     what_went_well: str
     what_could_be_improved: str
 
+class ImprovementSuggestions(BaseModel):
+    playground_suggestions: Optional[Dict[str, List[str]]] = None
+    toy_suggestions: Optional[Dict[str, List[str]]] = None
+
 class FeedbackDetails(RootModel):
     root: Dict[str, CriterionFeedback]
 
@@ -103,6 +107,34 @@ class SubmissionResponseMulti(BaseModel):
     activity_description: Optional[str] = None
     playground_feedback: Optional[Dict[str, CriterionFeedback]] = None
     toy_feedback: Optional[Dict[str, CriterionFeedback]] = None
+    created_at: datetime
+    updated_at: datetime
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+        arbitrary_types_allowed=True,
+        json_encoders={ObjectId: str},
+    )
+
+class ImprovementSuggestionsInDB(BaseModel):
+    id: PyObjectId = Field(default_factory=PyObjectId, alias="_id")
+    submission_id: PyObjectId
+    playground_suggestions: Optional[Dict[str, List[str]]] = None
+    toy_suggestions: Optional[Dict[str, List[str]]] = None
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
+    
+    model_config = ConfigDict(
+        populate_by_name=True,
+        arbitrary_types_allowed=True,
+        json_encoders={ObjectId: str},
+    )
+
+class ImprovementSuggestionsResponse(BaseModel):
+    id: str = Field(alias="_id")
+    submission_id: str
+    playground_suggestions: Optional[Dict[str, List[str]]] = None
+    toy_suggestions: Optional[Dict[str, List[str]]] = None
     created_at: datetime
     updated_at: datetime
 
