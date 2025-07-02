@@ -1,6 +1,5 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import type { SubmissionResponse, CriterionFeedback } from "@/lib/api";
 import React, { useState } from "react";
