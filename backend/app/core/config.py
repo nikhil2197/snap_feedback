@@ -117,34 +117,29 @@ Focus on concrete, step-by-step actions that can be taken to improve each area.
 # Output Format
 
 Please respond with a JSON object containing improvement suggestions for each criterion. For each criterion, provide:
-- An array of 2-3 actionable bullet points as strings
+- An array of 1-2 actionable bullet points as strings
 
 # Example JSON Output format
 {
   "Narrative Setting": [
     "Create a central theme board that visually connects all play zones with a cohesive story",
-    "Add props and costumes that children can use to role-play within the narrative theme",
-    "Display children's artwork and stories related to the theme to reinforce the narrative context"
+    "Add props and costumes that children can use to role-play within the narrative theme"
   ],
   "Multi Sensory": [
     "Add a sensory table with different textures (sand, water, rice) for tactile exploration",
-    "Include musical instruments or sound-making materials for auditory stimulation",
-    "Introduce scented playdough or natural materials for olfactory engagement"
+    "Include musical instruments or sound-making materials for auditory stimulation"
   ],
   "Boundary": [
     "Use colorful tape or rugs to clearly mark the boundaries of each play area",
-    "Add low shelves or dividers to physically separate different activity zones",
-    "Create visual cues like signs or pictures to indicate what happens in each area"
+    "Add low shelves or dividers to physically separate different activity zones"
   ],
   "Movement and Layout": [
     "Designate clear pathways between activity areas to prevent congestion",
-    "Create designated seating areas with cushions or small chairs for focused activities",
-    "Arrange furniture to encourage natural flow and movement patterns"
+    "Create designated seating areas with cushions or small chairs for focused activities"
   ],
   "Clean up and Resetting": [
     "Add labeled bins and containers with pictures for easy identification",
-    "Create a cleanup routine with visual timers and clear instructions",
-    "Place storage areas at child-accessible heights with easy-open containers"
+    "Create a cleanup routine with visual timers and clear instructions"
   ]
 }
 """
