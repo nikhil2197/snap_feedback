@@ -30,7 +30,7 @@ export function MultiStepForm() {
       try {
         const response = await submitDesignMulti(playgroundImages, toyImages, activityDescription);
         setSubmission(response);
-        setSubmissionId((response as any)._id || response.id);
+        setSubmissionId((response as SubmissionResponse & { _id?: string })._id || response.id);
         nextStep();
       } catch (e) {
         if (e instanceof Error) {

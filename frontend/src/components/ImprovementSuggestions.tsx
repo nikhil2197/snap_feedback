@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button"
 import type { ImprovementSuggestionsResponse } from "@/lib/api";
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 
 function SuggestionsSection({ suggestions }: { suggestions: Record<string, string[]> | undefined }) {
   return (
@@ -49,11 +49,7 @@ export function ImprovementSuggestions({
   const [error, setError] = useState<string | null>(null);
   const [isRegenerating, setIsRegenerating] = useState(false);
 
-  React.useEffect(() => {
-    loadSuggestions();
-  }, [submissionId]);
-
-  const loadSuggestions = async () => {
+  const loadSuggestions = useCallback(async () => {
     setIsLoading(true);
     setError(null);
     try {
@@ -68,7 +64,11 @@ export function ImprovementSuggestions({
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [submissionId]);
+
+  React.useEffect(() => {
+    loadSuggestions();
+  }, [loadSuggestions]);
 
   const handleRegenerate = async () => {
     setIsRegenerating(true);
